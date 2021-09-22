@@ -1,0 +1,8 @@
+---
+- name: Firewall | Start Firewall
+  shell: echo 'Verifying firewall sevice state'
+  notify:
+    - start firewall
+
+- name: Firewall | Run all staged handlers
+  meta: flush_handlers

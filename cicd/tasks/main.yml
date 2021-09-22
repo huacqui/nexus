@@ -1,0 +1,22 @@
+---
+# tasks file for cicd
+
+#   Firewall
+- name: Firewall | Add specific variables
+  include_vars: "firewall.yml"
+
+- name: Firewall | Add Firewall tasks
+  include_tasks: "firewall.yml"
+
+#   Nexus
+- name: Nexus | Add specific variables
+  include_vars: "nexus.yml"
+  when: nexus_install
+
+- name: Nexus | Add Nexus tasks
+  include_tasks: "nexus.yml"
+  when: nexus_install
+
+- name: Nginx | Add Nginx tasks
+  include_tasks: "nginx.yml"
+  when: nexus_install

@@ -1,0 +1,72 @@
+---
+- name: Nexus | Install dependency
+  package:
+    name: "{{ item.package }}"
+    state: "{{ item.state }}"
+  loop: "{{ nexus_package }}"
+
+- name: Nexus | Add a System user that runs the Nexus process
+  user:
+    name: "{{ nexus_system_user }}"
+    system: yes
+    create_home: no
+    shell: /usr/sbin/nologin
+    comment: "Nexus user service"
+    expires: -1
+
+- name: Nexus | Copy the zip file to the remote server and unzip it
+  unarchive:
+    src: "{{ pkg_location | default('files') }}"
+    dest: "{{ install_location }}"
+    owner: "{{ nexus_system_user }}"
+    remote_src: yes
+    group: "{{ nexus_system_user }}"
+  environment: "{{ proxy_env }}"
+
+- name: Nexus | Change file ownership, group and permissions
+  file:
+    path: "{{ item }}"
+    owner: "{{ nexus_system_user }}"
+    group: "{{ nexus_system_user }}"
+    state: directory
+    recurse: yes
+  loop:
+    - "{{ nexus_home_directory }}"
+    - "{{ nexus_sonatype_directory }}"
+
+- name: Nexus | Create nexus service
+  template:
+    src: "templates/{{ nexus_service_template }}.j2"
+    dest: "/etc/systemd/system/{{ nexus_service_template }}"
+  notify:
+    - reload systemd
+
+- name: Nexus | Configure firewall
+  firewalld:
+    port: "{{ item.port }}"
+    permanent: yes
+    immediate: yes
+    state: "{{ item.state }}"
+  loop: "{{ nexus_firewall_ports }}"
+  notify:
+    - restart firewall
+    - set selinux
+
+- name: Nexus | Configure nexus ip
+  ini_file:
+    path: "{{ nexus_home_directory }}/etc/nexus-default.properties"
+    option: application-host
+    value: 127.0.0.1
+    no_extra_spaces: yes
+    state: present
+    section: null
+  notify:
+    - start service
+
+- name: Nexus | Config JVM per Memory size
+  lineinfile:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: true
+  loop: "{{ nexus_tuning_jvm }}"

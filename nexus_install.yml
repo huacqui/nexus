@@ -1,0 +1,10 @@
+---
+- hosts: all
+  vars:
+      nexus_install: true
+      nexus_server: nexus.labtest.com.py
+      pkg_location: https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+      nexus_version: 3.34.0-01
+  roles:
+    - role: cicd
+...

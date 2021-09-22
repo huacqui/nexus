@@ -1,0 +1,9 @@
+---
+# defaults file for cicd
+
+# Installation
+install_location: "/opt"
+nexus_version: '3.34.0-01'
+nexus_tar_file: 'nexus-{{ nexus_version }}.tar.gz'
+nexus_home_directory: "{{ install_location }}/nexus-{{ nexus_version }}"
+nexus_sonatype_directory: "{{ install_location }}/sonatype-work"

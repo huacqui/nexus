@@ -1,0 +1,17 @@
+---
+nexus_package:
+  - {package: 'java-1.8.0-openjdk-devel', state: 'present'}
+  - {package: 'tar', state: 'present'}
+  - {package: 'nginx', state: 'present'}
+  - {package: 'python3-cryptography', state: 'present'}
+nexus_firewall_ports:
+  - {port: '443/tcp', state: 'enabled'}
+nexus_system_user: 'nexus'
+nexus_service_template: 'nexus.service'
+service_name: nexus
+nexus_tuning_jvm:
+  - {path: '{{ nexus_home_directory }}/bin/nexus.vmoptions', regexp: '-Xms2703m', line: '-Xms2703m'}
+  - {path: '{{ nexus_home_directory }}/bin/nexus.vmoptions', regexp: '-XX:MaxDirectMemorySize=2703m', line: '-XX:MaxDirectMemorySize=2703m'}
+proxy_env:
+  http_proxy: ""
+  https_proxy: ""
