@@ -2,6 +2,7 @@
 - hosts: all
   vars:
       nexus_install: true
+      nexus_create_repos: true
       nexus_server: nexusfull.labtest.com.py
       pkg_location: https://download.sonatype.com/nexus/3/latest-unix.tar.gz
       nexus_version: 3.34.1-01

@@ -17,6 +17,13 @@
   include_tasks: "nexus.yml"
   when: nexus_install
 
+# Nginx 
 - name: Nginx | Add Nginx tasks
   include_tasks: "nginx.yml"
   when: nexus_install
+
+# Repositories
+#
+- name: Nexus | Add Nexus Repos
+  include_tasks: "repos_ocp4.yml"
+  when: nexus_create_repos

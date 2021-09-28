@@ -1,0 +1,71 @@
+---
+- name: Nexus | Validate Docker Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/docker/hosted/docker_local
+    method: GET
+    user: admin
+    password: "{{ admin_pass }}"
+    force_basic_auth: yes
+    status_code: 200,404
+    headers:
+        accept: application/json
+  register: dockerlocal
+- name: Nexus | Validate Raw Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/raw/hosted/ocp_raw_local
+    method: GET
+    user: admin
+    password: "{{ admin_pass }}"
+    force_basic_auth: yes
+    status_code: 200,404
+    headers:
+      accept: application/json
+  register: rawlocal
+- name: Nexus | Create Docker Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/docker/hosted
+    method: POST
+    user: admin
+    password: "{{ admin_pass }}"
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    headers:
+      Content-Type: application/json
+      accept: application/json
+    src: docker.json
+  when: dockerlocal.status == 404
+- name: Nexus | Create Raw Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/raw/hosted
+    method: POST
+    user: admin
+    password: '{{ admin_pass }}'
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    headers:
+      Content-Type: application/json
+      accept: application/json
+    src: raw.json
+  when: rawlocal.status == 404
+
+- name: Nexus | Get openshift-client-linux
+  get_url:
+    url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
+    dest: /tmp/openshift-client-linux.tar.gz
+
+- name: Nexus | Get openshift-install-linux
+  get_url:
+    url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-install-linux.tar.gz
+    dest: /tmp/openshift-install-linux.tar.gz
+
+- name: Nexus | Upload openshift-client to Nexus OOS
+  shell:
+    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/openshift-client-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=openshift-client-linux.tar.gz'"
+    warn: false
+
+- name: Nexus | Upload openshift-install to Nexus OOS
+  shell:
+    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/openshift-install-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=openshift-install-linux.tar.gz'"
+    warn: false
