@@ -10,8 +10,7 @@ nexus_system_user: 'nexus'
 nexus_service_template: 'nexus.service'
 service_name: nexus
 nexus_tuning_jvm:
-  - {path: '{{ nexus_home_directory }}/bin/nexus.vmoptions', regexp: '-Xms2703m', line: '-Xms2703m'}
-  - {path: '{{ nexus_home_directory }}/bin/nexus.vmoptions', regexp: '-XX:MaxDirectMemorySize=2703m', line: '-XX:MaxDirectMemorySize=2703m'}
+  - {path: '{{ nexus_home_directory }}/bin/nexus.vmoptions', line: '-Djava.util.prefs.userRoot={{ nexus_home_directory }}/.java'}
 proxy_env:
   http_proxy: ""
   https_proxy: ""

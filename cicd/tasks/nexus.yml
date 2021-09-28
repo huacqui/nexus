@@ -38,8 +38,6 @@
   template:
     src: "templates/{{ nexus_service_template }}.j2"
     dest: "/etc/systemd/system/{{ nexus_service_template }}"
-  notify:
-    - reload systemd
 
 - name: Nexus | Configure firewall
   firewalld:
@@ -48,9 +46,20 @@
     immediate: yes
     state: "{{ item.state }}"
   loop: "{{ nexus_firewall_ports }}"
-  notify:
-    - restart firewall
-    - set selinux
+
+- name: Nexus | reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Nexus | Restart firewall
+  systemd:
+    name: firewalld
+    state: restarted
+
+- name: Nexus | Set selinux
+  selinux:
+    policy: targeted
+    state: permissive
 
 - name: Nexus | Configure nexus ip
   ini_file:
@@ -60,13 +69,106 @@
     no_extra_spaces: yes
     state: present
     section: null
-  notify:
-    - start service
 
 - name: Nexus | Config JVM per Memory size
   lineinfile:
     path: "{{ item.path }}"
-    regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
-    backrefs: true
   loop: "{{ nexus_tuning_jvm }}"
+
+- name: Nexus | Start service
+  systemd:
+    name: "{{ service_name }}"
+    state: started
+    enabled: yes
+- name: Nexus | wait started nexus services
+  wait_for:
+    path: "{{ install_location }}/sonatype-work/nexus3/log/nexus.log"
+    search_regex: Started
+
+- name: Nexus | Read admin password default
+  slurp:
+    src: "{{ install_location }}/sonatype-work/nexus3/admin.password"
+  register: adminpass
+
+- name: Nexus | Print admin pass
+  debug:
+     msg: "{{ adminpass['content'] | b64decode }}"
+
+- name: Nexus | Change pass admin
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/security/users/admin/change-password
+    method: PUT
+    user: admin
+    password: "{{ adminpass['content'] | b64decode }}"
+    force_basic_auth: yes
+    status_code: 204
+    body_format: form-urlencoded
+    headers:
+      Content-Type: text/plain
+      accept: application/json
+    body: "{{ admin_pass }}"
+
+- name: Nexus | Validate Docker Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/docker/hosted/docker_local
+    method: GET
+    user: admin
+    password: "{{ admin_pass }}"
+    force_basic_auth: yes
+    status_code: 200,404
+    headers:
+        accept: application/json
+    register: dockerlocal
+
+- name: Nexus | Validate Raw Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/raw/hosted/ocp_raw_local
+    method: GET
+    user: admin
+    password: "{{ admin_pass }}"
+    force_basic_auth: yes
+    status_code: 200,404
+    headers:
+      accept: application/json
+    register: rawlocal
+
+- name: Nexus | Create Docker Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/docker/hosted
+    method: POST
+    user: admin
+    password: "{{ admin_pass }}"
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    headers:
+      Content-Type: application/json
+      accept: application/json
+    src: docker.json
+    when: dockerlocal.status == 404
+
+- name: Nexus | Create Raw Repo
+  uri:
+    url: http://127.0.0.1:8081/service/rest/v1/repositories/raw/hosted
+    method: POST
+    user: admin
+    password: '{{ admin_pass }}'
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    headers:
+      Content-Type: application/json
+      accept: application/json
+    src: raw.json
+    when: rawlocal.status == 404
+
+- name: Nexus | Get openshift-client-linux
+  get_url:
+    url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
+    dest: /tmp/openshift-client-linux.tar.gz
+
+- name: Nexus | Get openshift-install-linux
+  get_url:
+    url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-install-linux.tar.gz
+    dest: /tmp/openshift-install-linux.tar.gz

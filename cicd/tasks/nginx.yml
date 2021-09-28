@@ -29,7 +29,4 @@
     src: ssl.conf
     dest: /etc/nginx/conf.d/ssl.conf
   notify:
-     - crear admin
      - restart nginx
-     - read admin
-     - show admin
