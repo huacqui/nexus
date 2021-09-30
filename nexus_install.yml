@@ -1,12 +1,11 @@
 ---
-- hosts: all
+- hosts: nexus
   vars:
       nexus_install: true
       nexus_create_repos: true
       nexus_server: nexusfull.labtest.com.py
-      pkg_location: https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+      pkg_location: https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.34.1-01-unix.tar.gz
       nexus_version: 3.34.1-01
-      admin_pass: '123456789'
+      admin_pass: 'redhat'
   roles:
     - role: cicd
-...

@@ -11,7 +11,6 @@
 #   Nexus
 - name: Nexus | Add specific variables
   include_vars: "nexus.yml"
-  when: nexus_install
 
 - name: Nexus | Add Nexus tasks
   include_tasks: "nexus.yml"
@@ -23,7 +22,10 @@
   when: nexus_install
 
 # Repositories
-#
+
+- name: Nexus | Add specific variables
+  include_vars: "ocp.yml"
+
 - name: Nexus | Add Nexus Repos
   include_tasks: "repos_ocp4.yml"
   when: nexus_create_repos
