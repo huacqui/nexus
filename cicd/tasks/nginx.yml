@@ -16,6 +16,11 @@
     path: /etc/pki/nginx/server.csr
     privatekey_path: /etc/pki/nginx/private/server.key
     common_name: "{{ nexus_server }}"
+    country_name: Paraguay
+    email_address: example@com.py
+    locality_name: Asunción
+    organization_name: example
+    subject_alt_name: "IP:{{  ansible_default_ipv4.address }}, DNS:{{ nexus_server }}"
 
 - name: Nginx | Generate a Self Signed OpenSSL certificate
   openssl_certificate:
