@@ -4,6 +4,8 @@ nexus_package:
   - {package: 'tar', state: 'present'}
   - {package: 'nginx', state: 'present'}
   - {package: 'python3-cryptography', state: 'present'}
+  - {package: 'git', state: 'present'}
+  - {package: 'podman', state: 'present'}
 nexus_firewall_ports:
   - {port: '443/tcp', state: 'enabled'}
 nexus_system_user: 'nexus'

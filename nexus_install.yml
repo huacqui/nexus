@@ -1,12 +1,12 @@
 ---
 - hosts: nexus
   vars:
-      nexus_install: true
+      nexus_install: false
       nexus_create_repos: true
-      nexus_server: nexusfull.labtest.com.py
+      nexus_server: nexus.t.st
+      nexus_verison: 3.34.1-01
       pkg_location: https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.34.1-01-unix.tar.gz
       oc_pkg_location: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.8.12
-      nexus_version: 3.34.1-01
       admin_pass: 'redhat'
   roles:
     - role: cicd

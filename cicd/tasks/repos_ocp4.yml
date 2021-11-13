@@ -65,7 +65,7 @@
 - name: Nexus | Get openshift-install-linux
   get_url:
     url: "{{ oc_pkg_location }}/opm-linux.tar.gz"
-    dest: /tmp/openshift-install-linux.tar.gz
+    dest: /tmp/opm-linux.tar.gz
   environment: "{{ proxy_env }}"
 
 - name: Nexus | Get rhcos

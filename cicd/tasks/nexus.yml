@@ -14,14 +14,21 @@
     comment: "Nexus user service"
     expires: -1
 
+- name: Nexus | Dowload the zip file to remote server
+  get_url:
+     url: "{{ pkg_location | default('files') }}"
+     dest: /tmp
+     timeout: 30
+  environment: "{{ proxy_env }}"
+  register: nexus_download
+
 - name: Nexus | Copy the zip file to the remote server and unzip it
   unarchive:
-    src: "{{ pkg_location | default('files') }}"
+    src: "{{ nexus_download.dest }}"
     dest: "{{ install_location }}"
     owner: "{{ nexus_system_user }}"
     remote_src: yes
     group: "{{ nexus_system_user }}"
-  environment: "{{ proxy_env }}"
 
 - name: Nexus | Change file ownership, group and permissions
   file:
