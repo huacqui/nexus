@@ -115,3 +115,17 @@
       Content-Type: text/plain
       accept: application/json
     body: "{{ admin_pass }}"
+
+- name: Nexus | Create .ssh
+  file:
+    path: /root/.ssh
+    mode: '0700'
+
+- name: Nexus | Copy id_rsa
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: id_rsa, dest: /root/.ssh/id_rsa, mode: '0600' }
+    - { src: id_rsa.pub, dest: /root/.ssh/id_rsa.pub, mode: '0644' }
