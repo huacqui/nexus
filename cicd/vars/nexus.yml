@@ -6,6 +6,7 @@ nexus_package:
   - {package: 'python3-cryptography', state: 'present'}
   - {package: 'git', state: 'present'}
   - {package: 'podman', state: 'present'}
+  - {package: 'unzip', state: 'present'}
 nexus_firewall_ports:
   - {port: '443/tcp', state: 'enabled'}
 nexus_system_user: 'nexus'
