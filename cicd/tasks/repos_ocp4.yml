@@ -62,10 +62,16 @@
     dest: /tmp/openshift-install-linux.tar.gz
   environment: "{{ proxy_env }}"
 
-- name: Nexus | Get openshift-install-linux
+- name: Nexus | Get opm Client
   get_url:
     url: "{{ oc_pkg_location }}/opm-linux.tar.gz"
     dest: /tmp/opm-linux.tar.gz
+  environment: "{{ proxy_env }}"
+
+- name: Nexus | Donwload grpcurl
+  get_url:
+     url: "{{ grpcurl_url }}"
+     dest: "/tmp/{{ grpcurl_url.split('/')[8] }}"
   environment: "{{ proxy_env }}"
 
 - name: Nexus | Get rhcos
@@ -89,7 +95,8 @@
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ ova_name }}' -F 'raw.asset1.filename={{ ova_name }}'"
     warn: false
 
-- name: Nexus | Upload opm to Nexus OOS
+- name: Nexus | Upload gpcurl to Nexus OOS
   shell:
-    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/opm-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=opm-linux.tar.gz'"
+    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ grpcurl_url.split('/')[8] }};type=application/gzip' -F 'raw.asset1.filename={{ grpcurl_url.split('/')[8] }}'"
     warn: false
+
