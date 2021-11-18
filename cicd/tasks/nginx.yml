@@ -7,27 +7,13 @@
       - /etc/pki/nginx/
       - /etc/pki/nginx/private/
 
-- name: Nginx | Generate an OpenSSL private key with the default values (4096 bits, RSA)
-  openssl_privatekey:
-    path: /etc/pki/nginx/private/server.key
-
-- name: Nginx | Generate an OpenSSL Certificate Signing Request
-  openssl_csr:
-    path: /etc/pki/nginx/server.csr
-    privatekey_path: /etc/pki/nginx/private/server.key
-    common_name: "{{ nexus_server }}"
-    country_name: PY
-    email_address: example@com.py
-    locality_name: Asunción
-    organization_name: example
-    subject_alt_name: "IP:{{  ansible_default_ipv4.address }},DNS:{{ nexus_server }}"
-
-- name: Nginx | Generate a Self Signed OpenSSL certificate
-  openssl_certificate:
-    path: /etc/pki/nginx/server.crt
-    privatekey_path: /etc/pki/nginx/private/server.key
-    csr_path: /etc/pki/nginx/server.csr
-    provider: selfsigned
+- name: Nginx | Copy Certificate
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: server.crt, dest: /etc/pki/nginx/server.crt }
+    - { src: server.key, dest: /etc/pki/nginx/private/server.key }
 
 - name: Nginx | Copy ssl.conf
   copy:
