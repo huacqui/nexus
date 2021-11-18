@@ -99,4 +99,10 @@
   shell:
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ grpcurl_url.split('/')[8] }};type=application/gzip' -F 'raw.asset1.filename={{ grpcurl_url.split('/')[8] }}'"
     warn: false
+    
+- name: Nexus | Upload opm to Nexus OOS
+  shell:
+    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/opm-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=opm-linux.tar.gz'"
+    warn: false
+
 
