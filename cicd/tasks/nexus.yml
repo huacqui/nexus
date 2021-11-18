@@ -120,6 +120,7 @@
   file:
     path: /root/.ssh
     mode: '0700'
+    state: directory
 
 - name: Nexus | Copy id_rsa
   copy:
@@ -129,3 +130,14 @@
   loop:
     - { src: id_rsa, dest: /root/.ssh/id_rsa, mode: '0600' }
     - { src: id_rsa.pub, dest: /root/.ssh/id_rsa.pub, mode: '0644' }
+    
+- name: Nexus | Add config sshd
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: 'ClientAliveInterval'
+    line: 'ClientAliveInterval 90000'
+
+- name: Nexus | Restart sshd
+  systemd:
+    name: sshd
+    state: restarted
