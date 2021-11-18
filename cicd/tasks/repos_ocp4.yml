@@ -57,65 +57,90 @@
   get_url:
     url: "{{ oc_pkg_location }}/openshift-client-linux.tar.gz"
     dest: /tmp/openshift-client-linux.tar.gz
+    timeout: 30
   environment: "{{ proxy_env }}"
+  register: oc
+  until: oc.failed == False
   retries: 2
   delay: 10
+  ignore_errors: yes
   
 - name: Nexus | Get openshift-install-linux
   get_url:
     url: "{{ oc_pkg_location }}/openshift-install-linux.tar.gz"
     dest: /tmp/openshift-install-linux.tar.gz
+    timeout: 30
   environment: "{{ proxy_env }}"
+  register: oci
+  until: oci.failed == False
   retries: 2
   delay: 10
+  ignore_errors: yes
   
 - name: Nexus | Get opm Client
   get_url:
     url: "{{ oc_pkg_location }}/opm-linux.tar.gz"
     dest: /tmp/opm-linux.tar.gz
+    timeout: 30
   environment: "{{ proxy_env }}"
+  register: opm
+  until: opm.failed == False
   retries: 2
   delay: 10
+  ignore_errors: yes
   
 - name: Nexus | Donwload grpcurl
   get_url:
      url: "{{ grpcurl_url }}"
      dest: "/tmp/{{ grpcurl_url.split('/')[8] }}"
+     timeout: 30
   environment: "{{ proxy_env }}"
+  register: gpr
+  until: gpr.failed == False
   retries: 2
   delay: 10
+  ignore_errors: yes
   
 - name: Nexus | Get rhcos
   get_url:
     url: "{{ ova_url }}"
     dest: "/tmp/{{ ova_url.split('/')[9] }}"
+    timeout: 30
   environment: "{{ proxy_env }}"
+  register: rhcos
+  until: rhcos.failed == False
   retries: 2
   delay: 10
+  ignore_errors: yes
   
 - name: Nexus | Upload openshift-client to Nexus OOS
   shell:
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/openshift-client-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=openshift-client-linux.tar.gz'"
     warn: false
+  ignore_errors: yes
 
 - name: Nexus | Upload openshift-install to Nexus OOS
   shell:
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/openshift-install-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=openshift-install-linux.tar.gz'"
     warn: false
+  ignore_errors: yes
 
 - name: Nexus | Upload ova to Nexus OOS
   shell:
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ ova_url.split('/')[9] }}' -F 'raw.asset1.filename={{ ova_url.split('/')[9] }}'"
     warn: false
+  ignore_errors: yes
 
 - name: Nexus | Upload gpcurl to Nexus OOS
   shell:
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ grpcurl_url.split('/')[8] }};type=application/gzip' -F 'raw.asset1.filename={{ grpcurl_url.split('/')[8] }}'"
     warn: false
+  ignore_errors: yes
     
 - name: Nexus | Upload opm to Nexus OOS
   shell:
     cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/opm-linux.tar.gz;type=application/gzip' -F 'raw.asset1.filename=opm-linux.tar.gz'"
     warn: false
+  ignore_errors: yes
 
 
