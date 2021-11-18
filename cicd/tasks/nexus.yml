@@ -21,6 +21,8 @@
      timeout: 30
   environment: "{{ proxy_env }}"
   register: nexus_download
+  retries: 2
+  delay: 10
 
 - name: Nexus | Copy the zip file to the remote server and unzip it
   unarchive:
