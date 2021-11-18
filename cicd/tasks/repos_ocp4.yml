@@ -77,7 +77,7 @@
 - name: Nexus | Get rhcos
   get_url:
     url: "{{ ova_url }}"
-    dest: "/tmp/{{ ova_name }}"
+    dest: "/tmp/{{ ova_url.split('/')[9] }}"
   environment: "{{ proxy_env }}"
 
 - name: Nexus | Upload openshift-client to Nexus OOS
@@ -92,7 +92,7 @@
 
 - name: Nexus | Upload ova to Nexus OOS
   shell:
-    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ ova_name }}' -F 'raw.asset1.filename={{ ova_name }}'"
+    cmd: "curl -X 'POST' -u 'admin:{{ admin_pass }}' http://127.0.0.1:8081/service/rest/v1/components?repository=ocp_raw_local -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'raw.directory=/' -F 'raw.asset1=@/tmp/{{ ova_url.split('/')[9] }}' -F 'raw.asset1.filename={{ ova_url.split('/')[9] }}'"
     warn: false
 
 - name: Nexus | Upload gpcurl to Nexus OOS

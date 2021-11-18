@@ -10,5 +10,6 @@
       oc_pkg_location: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.8.12
       grpcurl_url: https://github.com/fullstorydev/grpcurl/releases/download/v1.8.5/grpcurl_1.8.5_linux_x86_64.tar.gz
       admin_pass: 'redhat'
+      ova_url: https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-4.8/48.84.202106301921-0/x86_64/rhcos-48.84.202106301921-0-vmware.x86_64.ova
   roles:
     - role: cicd
