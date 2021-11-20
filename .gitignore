@@ -1,2 +1,2 @@
-cicd/files/id_rsa*
-cicd/files/server*
+#cicd/files/id_rsa*
+#cicd/files/server*

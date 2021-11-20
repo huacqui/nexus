@@ -121,18 +121,26 @@
 
 - name: Nexus | Create .ssh
   file:
-    path: /root/.ssh
+    path: "{{ item }}"
     mode: '0700'
     state: directory
+  loop:
+    - "/root/.ssh"
+    - "/home/{{ user_git }}/.ssh"
 
 - name: Nexus | Copy id_rsa
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+
   loop:
-    - { src: id_rsa, dest: /root/.ssh/id_rsa, mode: '0600' }
-    - { src: id_rsa.pub, dest: /root/.ssh/id_rsa.pub, mode: '0644' }
+    - { src: id_rsa_root, dest: /root/.ssh/id_rsa, mode: '0600', user: root }
+    - "{ src: id_rsa_ansible, dest: /root/.ssh/id_rsa, mode: '0600', user: {{ user_git }} }"
+    - { src: id_rsa_root.pub, dest: /root/.ssh/id_rsa.pub, mode: '0644', user: root }
+    - "{ src: id_rsa_root.pub, dest: /root/.ssh/id_rsa.pub, mode: '0644', user: {{ user_git }} }"
     
 - name: Nexus | Add config sshd
   lineinfile:
