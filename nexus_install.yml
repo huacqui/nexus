@@ -4,7 +4,7 @@
       nexus_install: true
       nexus_create_repos: false
       nexus_install_self: false
-      nexus_server: nexus.t.st
+      nexus_server: nexus.local.st
       nexus_version: 3.40.1-01
       pkg_location: https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.40.1-01-unix.tar.gz
       oc_pkg_location: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.8.12
