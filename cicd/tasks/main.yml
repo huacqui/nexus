@@ -19,14 +19,9 @@
 # Nginx 
 - name: Nginx | Add Nginx self certificate tasks
   include_tasks: "nginx_self.yml"
-  when: nexus_install and nexus_install_self
-
-- name: Nginx | Add Nginx tasks
-  include_tasks: "nginx.yml"
-  when: nexus_install
+  when: nexus_install_self
 
 # Repositories
-
 - name: Nexus | Add specific variables
   include_vars: "ocp.yml"
 
