@@ -14,7 +14,7 @@
 
 - name: Nexus | Add Nexus tasks
   include_tasks: "nexus.yml"
-  when: nexus_install and nexus_install_self == false
+  when: nexus_install
 
 # Nginx 
 - name: Nginx | Add Nginx self certificate tasks
